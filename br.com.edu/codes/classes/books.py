@@ -139,6 +139,7 @@ class Functions():
         # self.select_bd()
         # self.limpar_tela()
 
+    # Comprar Livro Lista de Desejos
     def comprarBook(self):
         self.id = self.entry_id_book_dreams.get()
         self.nome = self.entry_name_book_dreams.get()
@@ -171,6 +172,7 @@ class Functions():
             self.entry_tipo_leitura_dreams.insert(END, col4)
 
 
+    # Excluir Livro Lista de Desejos
     def deleteBook(self):
         self.id = self.entry_id_book_dreams.get()
 
@@ -184,6 +186,8 @@ class Functions():
         self.limpar_tela()
         self.select_bd()
 
+
+    # Atualizar Livro Lista de Desejos
     def updateBook(self):
         self.id = self.entry_id_book_dreams.get()
         self.nome = self.entry_name_book_dreams.get()
@@ -200,7 +204,9 @@ class Functions():
         self.select_bd()
         self.limpar_tela()
 
-    def searchName(self): # procurar comprados
+
+    # Procurar p/nome Lista de Desejos
+    def searchName(self):
         self.nome = self.entry_name_book_dreams.get()
 
         self.conectar_bd()
@@ -209,22 +215,26 @@ class Functions():
         self.cursor.execute("""
                         SELECT id, nome, editora, tipo_leitura 
                         FROM Books
-                        WHERE nome = %s
+                        WHERE nome = %s AND status = True
                         ORDER BY id ASC
                         """, (self.nome, ))
         lista = self.cursor.fetchall()
 
-        new_lista = [[0, 0, 0, 0]]
-        try:
-            for i in lista:
-                self.list.insert("", END, values=i)
-        except:
-            for k in new_lista:
-                self.list.insert("", END, values=k)
-        self.limpar_tela()
-        self.desconecta_bd()
+        if len(lista) == 0:
+            tkinter.messagebox.showinfo("Lista de Desejos", "Nenhum livro encontrado")
+        else:
+            new_lista = [[0, 0, 0, 0]]
+            try:
+                for i in lista:
+                    self.list.insert("", END, values=i)
+            except:
+                for k in new_lista:
+                    self.list.insert("", END, values=k)
+            self.limpar_tela()
+            self.desconecta_bd()
 
-    def searchNameComprados(self): # buscar lista de desejos
+    def searchNameComprados(self): # buscar Comprados
+        self.selectBdComprados()
         self.conectar_bd()
         self.list2.delete(*self.list2.get_children())
 
@@ -245,6 +255,7 @@ class Functions():
         self.desconecta_bd()
 
     def searchEditoraComprados(self):
+        self.selectBdComprados()
         self.conectar_bd()
         self.list2.delete(*self.list2.get_children())
 
@@ -264,7 +275,32 @@ class Functions():
                 self.list2.insert("", END, values=k)
         self.desconecta_bd()
 
+
+    # Ordenar p/editora Lista de Desejos
+    def searchEditoraDreams(self):
+        self.select_bd()
+        self.conectar_bd()
+        self.list.delete(*self.list.get_children())
+
+        self.cursor.execute("""   
+                            SELECT id, nome, editora, tipo_leitura 
+                            FROM Books
+                            WHERE status = True
+                            ORDER BY editora ASC
+                            """)
+        lista = self.cursor.fetchall()
+
+        new_lista = [[0, 0, 0, 0]]
+        try:
+            for i in lista:
+                self.list.insert("", END, values=i)
+        except:
+            for k in new_lista:
+                self.list.insert("", END, values=k)
+        self.desconecta_bd()
+
     def searchTipoLeitura(self):
+        self.selectBdComprados()
         self.conectar_bd()
         self.list2.delete(*self.list2.get_children())
 
@@ -284,7 +320,56 @@ class Functions():
                 self.list2.insert("", END, values=k)
         self.desconecta_bd()
 
+
+    # Ordenar p/Tipo Leitura Lista de Desejos
+    def searchTipoLeituraDreams(self):
+        self.select_bd()
+        self.conectar_bd()
+        self.list.delete(*self.list.get_children())
+
+        self.cursor.execute(""" 
+                            SELECT id, nome, editora, tipo_leitura 
+                            FROM Books
+                            WHERE status = True
+                            ORDER BY tipo_leitura ASC 
+                        """)
+        lista = self.cursor.fetchall()
+
+        new_lista = [[0, 0, 0, 0]]
+        try:
+            for i in lista:
+                self.list.insert("", END, values=i)
+        except:
+            for k in new_lista:
+                self.list.insert("", END, values=k)
+        self.desconecta_bd()
+
+
+    # Ordenar p/nome Lista de Desejos
+    def ordenarNameDreams(self):
+        self.select_bd()
+        self.conectar_bd()
+        self.list.delete(*self.list.get_children())
+
+        self.cursor.execute("""  
+                            SELECT id, nome, editora, tipo_leitura 
+                            FROM Books
+                            WHERE status = True
+                            ORDER BY nome ASC
+                        """)
+        lista = self.cursor.fetchall()
+
+        new_lista = [[0, 0, 0, 0]]
+        try:
+            for i in lista:
+                self.list.insert("", END, values=i)
+        except:
+            for k in new_lista:
+                self.list.insert("", END, values=k)
+        self.desconecta_bd()
+
     def searchIdComprados(self):
+        self.selectBdComprados()
         self.conectar_bd()
         self.list2.delete(*self.list2.get_children())
 
@@ -303,6 +388,22 @@ class Functions():
             for k in new_lista:
                 self.list2.insert("", END, values=k)
         self.desconecta_bd()
+
+    def contarBooks(self, tipo_leitura):
+        self.conectar_bd()
+        leitura = tipo_leitura
+        self.cursor.execute(""" SELECT id, nome, editora, tipo_leitura
+                                FROM Comprados
+                                WHERE tipo_leitura = %s
+                                ORDER BY id ASC
+                                """, (leitura, ))
+        lista = self.cursor.fetchall()
+        print(lista)
+        print(len(lista))
+
+        self.desconecta_bd()
+
+        return  len(lista)
 
 class Books(Functions):
 
@@ -473,17 +574,23 @@ class Books(Functions):
                                  font= "-weight bold -size 10", command= self.updateBook)
         self.bt_alterar.place(rely= 0.71, relx= 0.14, relwidth= 0.1)
 
-        self.bt_buscar_books = Button(self.frame_home_list_dreams, text= "Buscar Nome", background= self.cor_botoes, bd= 4,
+        self.bt_buscar_books = Button(self.frame_home_list_dreams, text= "Buscar P/Nome", background= self.cor_botoes, bd= 4,
                                       font= "-weight bold -size 10", command= self.searchName)
-        self.bt_buscar_books.place(rely= 0.71, relx= 0.47, relwidth= 0.15)
+        self.bt_buscar_books.place(rely= 0.71, relx= 0.61, relwidth= 0.15)
 
-        self.bt_buscar_editora_dreams = Button(self.frame_home_list_dreams, text= "Buscar Editora",
-                                               background= self.cor_botoes, bd= 4, font= "-weight bold -size 10")
-        self.bt_buscar_editora_dreams.place(rely= 0.71, relx= 0.63, relwidth= 0.15)
+        self.bt_ordenar_books = Button(self.frame_home_list_dreams, text= "Ordenar P/Nome", background= self.cor_botoes,
+                                       bd= 4, font= "-weight bold -size 10", command= self.ordenarNameDreams)
+        self.bt_ordenar_books.place(rely= 0.1, relx= 0.77, relwidth= 0.23)
 
-        self.bt_buscar_tipo_dreams = Button(self.frame_home_list_dreams, text= "Buscar Tipo Leitura",
-                                            background= self.cor_botoes, bd= 4, font= "-weight bold -size 10")
-        self.bt_buscar_tipo_dreams.place(rely= 0.71, relx= 0.79, relwidth= 0.2)
+        self.bt_buscar_editora_dreams = Button(self.frame_home_list_dreams, text= "Ordenar P/Editora",
+                                               background= self.cor_botoes, bd= 4, font= "-weight bold -size 10",
+                                               command= self.searchEditoraDreams)
+        self.bt_buscar_editora_dreams.place(rely= 0.4, relx= 0.77, relwidth= 0.23)
+
+        self.bt_buscar_tipo_dreams = Button(self.frame_home_list_dreams, text= "Ordenar P/Tipo Leitura",
+                                            background= self.cor_botoes, bd= 4, font= "-weight bold -size 10",
+                                            command= self.searchTipoLeituraDreams)
+        self.bt_buscar_tipo_dreams.place(rely= 0.71, relx= 0.77, relwidth= 0.23)
 
         self.bt_excluir_books = Button(self.frame_home_list_dreams, text= "Excluir", background= self.cor_botoes, bd= 4,
                                        font= "-weight bold -size 10", command= self.deleteBook)
@@ -492,6 +599,134 @@ class Books(Functions):
         # Lista
         self.list_frame()
         self.select_bd()
+
+    def homeBooksCompradosInformation(self):
+        self.window_information = Toplevel(self.window_book_comprados)
+
+        self.window_information.title("Livros Comprados - Relatorio")
+        self.window_information.geometry("300x300")
+        self.window_information.configure(background= self.cor_de_fundo)
+        self.window_information.resizable(False, False)
+
+        self.center(self.window_information)
+
+        # Frame
+        self.frame_home_books_information = Frame(self.window_information, bd= 4, bg= self.cor_de_fundo,
+                                                  highlightbackground= self.bordas_frames,
+                                                  highlightthickness= 1)
+        self.frame_home_books_information.place(rely= 0.02, relx= 0.02, relwidth= 0.96, relheight= 0.96)
+
+        # Labels
+        self.lb_relatorys = Label(self.frame_home_books_information, text="Relatorio",
+                                          font="-weight bold -size 18",
+                                          bg= self.cor_de_fundo, fg=self.cor_letras)
+        self.lb_relatorys.place(rely= 0.01, relx= 0.31, relwidth= 0.375)
+
+
+        self.lb_vida_espiritual = Label(self.frame_home_books_information, text= "Vida Espiritual: ",
+                                        font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_vida_espiritual.place(rely= 0.13, relx= 0.01, relwidth= 0.36)
+
+        self.lb_vida = Label(self.frame_home_books_information, text= self.contarBooks("Vida Espiritual"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_vida.place(rely= 0.13, relx= 0.37, relwidth= 0.11)
+
+
+        self.lb_literatura = Label(self.frame_home_books_information, text= "Literatura: ",
+                                   font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_literatura.place(rely= 0.13, relx= 0.55, relwidth= 0.25)
+
+        self.lb_lit = Label(self.frame_home_books_information, text= self.contarBooks("Literatura"),
+                            font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_lit.place(rely= 0.13, relx= 0.83, relwidth= 0.11)
+
+        self.lb_informatica = Label(self.frame_home_books_information, text= "Informática: ",
+                                    font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_informatica.place(rely= 0.24, relx= 0.01, relwidth= 0.29)
+
+        self.lb_info = Label(self.frame_home_books_information, text= self.contarBooks("Informática"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_info.place(rely= 0.24, relx= 0.33, relwidth= 0.11)
+
+        self.lb_investimento = Label(self.frame_home_books_information, text= "Investimentos: ",
+                                     font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_investimento.place(rely= 0.24, relx= 0.55, relwidth= 0.34)
+
+        self.lb_invest = Label(self.frame_home_books_information, text= self.contarBooks("Investimentos"),
+                               font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_invest.place(rely= 0.24, relx= 0.88, relwidth= 0.11)
+
+        self.lb_filosofia = Label(self.frame_home_books_information, text= "Filosofia: ",
+                                  font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_filosofia.place(rely= 0.35, relx= 0.01, relwidth= 0.22)
+
+        self.lb_filo = Label(self.frame_home_books_information, text= self.contarBooks("Filosofia"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_filo.place(rely= 0.35, relx= 0.33, relwidth= 0.11)
+
+        self.lb_historia = Label(self.frame_home_books_information, text= "História: ",
+                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_historia.place(rely= 0.35, relx= 0.55, relwidth= 0.2)
+
+        self.lb_hist = Label(self.frame_home_books_information, text= self.contarBooks("História"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_hist.place(rely= 0.35, relx= 0.83, relwidth= 0.11)
+
+        self.lb_economia = Label(self.frame_home_books_information, text= "Economia: ",
+                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_economia.place(rely= 0.46, relx= 0.01, relwidth= 0.255)
+
+        self.lb_econ = Label(self.frame_home_books_information, text= self.contarBooks("Economia"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_econ.place(rely= 0.46, relx= 0.33, relwidth= 0.11)
+
+        self.lb_psicologia = Label(self.frame_home_books_information, text= "Psicologia: ",
+                                   font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_psicologia.place(rely= 0.46, relx= 0.55, relwidth= 0.265)
+
+        self.lb_psic = Label(self.frame_home_books_information, text= self.contarBooks("Psicologia"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_psic.place(rely= 0.46, relx= 0.83, relwidth= 0.11)
+
+        self.lb_politica = Label(self.frame_home_books_information, text= "Política: ",
+                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_politica.place(rely= 0.57, relx= 0.01, relwidth= 0.2)
+
+        self.lb_polit = Label(self.frame_home_books_information, text= self.contarBooks("Política"),
+                              font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_polit.place(rely= 0.57, relx= 0.33, relwidth= 0.11)
+
+        self.lb_biografia = Label(self.frame_home_books_information, text= "Biografia: ",
+                                  font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_biografia.place(rely= 0.57, relx= 0.55, relwidth= 0.233)
+
+        self.lb_biog = Label(self.frame_home_books_information, text= self.contarBooks("Biografia"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_biog.place(rely= 0.57, relx= 0.83, relwidth= 0.11)
+
+        self.lb_liturgia = Label(self.frame_home_books_information, text= "Liturgia: ",
+                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_liturgia.place(rely= 0.68, relx= 0.01, relwidth= 0.205)
+
+        self.lb_lit = Label(self.frame_home_books_information, text= self.contarBooks("Liturgia"),
+                            font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_lit.place(rely= 0.68, relx= 0.33, relwidth= 0.11)
+
+        self.lb_teologia = Label(self.frame_home_books_information, text= "Teologia: ",
+                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_teologia.place(rely= 0.68, relx= 0.55, relwidth= 0.23)
+
+        self.lb_teo = Label(self.frame_home_books_information, text= self.contarBooks("Teologia"),
+                            font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_teo.place(rely= 0.68, relx= 0.83, relwidth= 0.11)
+
+        self.lb_doutrina = Label(self.frame_home_books_information, text= "Doutrina: ",
+                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_doutrina.place(rely= 0.79, relx= 0.55, relwidth= 0.223)
+
+        self.lb_dout = Label(self.frame_home_books_information, text= self.contarBooks("Doutrina"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_dout.place(rely= 0.79, relx= 0.83, relwidth= 0.11)
 
     def homeBooksComprados(self):
         self.window_book_comprados = Toplevel(self.books)
@@ -531,18 +766,21 @@ class Books(Functions):
         self.bt_buscar_editora = Button(self.frame_home_books_comprados, text= "Buscar Editora",
                                         background= self.cor_botoes, bd= 4,
                                         font= "-weight bold -size 10", command= self.searchEditoraComprados)
-        self.bt_buscar_editora.place(rely= 0.49, relx= 0.2, relwidth= 0.15)
+        self.bt_buscar_editora.place(rely= 0.49, relx= 0.18, relwidth= 0.15)
 
         self.bt_buscar_tipo = Button(self.frame_home_books_comprados, text= "Buscar Tipo Leitura",
                                      background= self.cor_botoes, bd= 4,
                                      font= "-weight bold -size 10", command= self.searchTipoLeitura)
-        self.bt_buscar_tipo.place(rely= 0.49, relx= 0.39, relwidth= 0.19)
+        self.bt_buscar_tipo.place(rely= 0.49, relx= 0.35, relwidth= 0.19)
 
         self.bt_buscar_id = Button(self.frame_home_books_comprados, text= "Buscar Id",
                                    background= self.cor_botoes, bd= 4,
                                    font= "-weight bold -size 10", command= self.searchIdComprados)
-        self.bt_buscar_id.place(rely= 0.49, relx= 0.62, relwidth= 0.13)
+        self.bt_buscar_id.place(rely= 0.49, relx= 0.56, relwidth= 0.13)
 
+        self.bt_informacoes = Button(self.frame_home_books_comprados, text= "Relatorio", background= self.cor_botoes,
+                                     bd= 4, font= "-weight bold -size 10", command= self.homeBooksCompradosInformation)
+        self.bt_informacoes.place(rely= 0.49, relx= 0.87, relwidth= 0.11)
 
         # Lista
         self.listFrameBooksComprados()
@@ -576,6 +814,7 @@ class Books(Functions):
                                   font= "-weight bold -size 10", command= self.homeBooksComprados)
         self.bt_my_books.place(rely= 0.4, relx= 0.7, relwidth= 0.26, relheight= 0.25)
 
+    # Lista do frame da Lista de Desejos
     def list_frame(self):
     #
        self.list = ttk.Treeview(self.frame_list_of_dreams, height=3,
