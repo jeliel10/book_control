@@ -548,20 +548,20 @@ class Books(Functions):
 
         self.entry_name_book_dreams = Entry(self.frame_home_list_dreams)
         self.entry_name_book_dreams.place(rely= 0.45, relx= 0.1, relwidth= 0.2)
-
-        self.lb_book_editory_dreams = Label(self.frame_home_list_dreams, text= "Editora", font= "-weight bold -size 13",
-                                            bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_book_editory_dreams.place(rely= 0.26, relx= 0.34, relwidth= 0.082)
-
-        self.entry_book_editory_dreams = Entry(self.frame_home_list_dreams)
-        self.entry_book_editory_dreams.place(rely= 0.45, relx= 0.34, relwidth= 0.18)
-
-        self.lb_tipo_leitura_dreams = Label(self.frame_home_list_dreams, text= "Tipo de Leitura", font= "-weight bold -size 13",
-                                            bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_tipo_leitura_dreams.place(rely= 0.26, relx= 0.56, relwidth= 0.17)
-
-        self.entry_tipo_leitura_dreams = Entry(self.frame_home_list_dreams)
-        self.entry_tipo_leitura_dreams.place(rely= 0.45, relx= 0.56, relwidth= 0.2)
+        #
+        # self.lb_book_editory_dreams = Label(self.frame_home_list_dreams, text= "Editora", font= "-weight bold -size 13",
+        #                                     bg= self.cor_de_fundo, fg= self.cor_letras)
+        # self.lb_book_editory_dreams.place(rely= 0.26, relx= 0.34, relwidth= 0.082)
+        #
+        # self.entry_book_editory_dreams = Entry(self.frame_home_list_dreams)
+        # self.entry_book_editory_dreams.place(rely= 0.45, relx= 0.34, relwidth= 0.18)
+        #
+        # self.lb_tipo_leitura_dreams = Label(self.frame_home_list_dreams, text= "Tipo de Leitura", font= "-weight bold -size 13",
+        #                                     bg= self.cor_de_fundo, fg= self.cor_letras)
+        # self.lb_tipo_leitura_dreams.place(rely= 0.26, relx= 0.56, relwidth= 0.17)
+        #
+        # self.entry_tipo_leitura_dreams = Entry(self.frame_home_list_dreams)
+        # self.entry_tipo_leitura_dreams.place(rely= 0.45, relx= 0.56, relwidth= 0.2)
 
         # Botôes
 
@@ -576,21 +576,21 @@ class Books(Functions):
 
         self.bt_buscar_books = Button(self.frame_home_list_dreams, text= "Buscar P/Nome", background= self.cor_botoes, bd= 4,
                                       font= "-weight bold -size 10", command= self.searchName)
-        self.bt_buscar_books.place(rely= 0.71, relx= 0.61, relwidth= 0.15)
+        self.bt_buscar_books.place(rely= 0.36, relx= 0.55, relwidth= 0.17)
 
         self.bt_ordenar_books = Button(self.frame_home_list_dreams, text= "Ordenar P/Nome", background= self.cor_botoes,
                                        bd= 4, font= "-weight bold -size 10", command= self.ordenarNameDreams)
-        self.bt_ordenar_books.place(rely= 0.1, relx= 0.77, relwidth= 0.23)
+        self.bt_ordenar_books.place(rely= 0.71, relx= 0.55, relwidth= 0.17)
 
         self.bt_buscar_editora_dreams = Button(self.frame_home_list_dreams, text= "Ordenar P/Editora",
                                                background= self.cor_botoes, bd= 4, font= "-weight bold -size 10",
                                                command= self.searchEditoraDreams)
-        self.bt_buscar_editora_dreams.place(rely= 0.4, relx= 0.77, relwidth= 0.23)
+        self.bt_buscar_editora_dreams.place(rely= 0.36, relx= 0.75, relwidth= 0.23)
 
         self.bt_buscar_tipo_dreams = Button(self.frame_home_list_dreams, text= "Ordenar P/Tipo Leitura",
                                             background= self.cor_botoes, bd= 4, font= "-weight bold -size 10",
                                             command= self.searchTipoLeituraDreams)
-        self.bt_buscar_tipo_dreams.place(rely= 0.71, relx= 0.77, relwidth= 0.23)
+        self.bt_buscar_tipo_dreams.place(rely= 0.71, relx= 0.75, relwidth= 0.23)
 
         self.bt_excluir_books = Button(self.frame_home_list_dreams, text= "Excluir", background= self.cor_botoes, bd= 4,
                                        font= "-weight bold -size 10", command= self.deleteBook)
