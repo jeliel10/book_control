@@ -9,7 +9,6 @@ class Functions():
     def limpar_tela(self):
         self.entry_id_book_dreams.delete(0, END)
         self.entry_name_book_dreams.delete(0, END)
-        self.entry_book_editory_dreams.delete(0, END)
         self.entry_tipo_leitura_dreams.delete(0, END)
 
     def conectar_bd(self):
@@ -168,9 +167,7 @@ class Functions():
             col1, col2, col3, col4 = self.list.item(n, 'values')
             self.entry_id_book_dreams.insert(END, col1)
             self.entry_name_book_dreams.insert(END, col2)
-            self.entry_book_editory_dreams.insert(END, col3)
             self.entry_tipo_leitura_dreams.insert(END, col4)
-
 
     # Excluir Livro Lista de Desejos
     def deleteBook(self):
@@ -191,14 +188,13 @@ class Functions():
     def updateBook(self):
         self.id = self.entry_id_book_dreams.get()
         self.nome = self.entry_name_book_dreams.get()
-        self.editora = self.entry_book_editory_dreams.get()
         self.tipo_leitura = self.entry_tipo_leitura_dreams.get()
 
 
         self.conectar_bd()
         self.cursor.execute("""
-                        UPDATE Books SET nome = %s, editora = %s, tipo_leitura = %s
-                        WHERE id = %s""", (self.nome, self.editora, self.tipo_leitura, self.id))
+                        UPDATE Books SET nome = %s, tipo_leitura = %s
+                        WHERE id = %s""", (self.nome, self.tipo_leitura, self.id))
         self.conn.commit()
         self.desconecta_bd()
         self.select_bd()
@@ -346,19 +342,21 @@ class Functions():
 
 
     # Ordenar p/nome Lista de Desejos
-    def ordenarNameDreams(self):
+    def filtrarTipoDreams(self):
+
         self.select_bd()
         self.conectar_bd()
         self.list.delete(*self.list.get_children())
+        tipo_leitura = self.entry_tipo_leitura_dreams.get()
 
         self.cursor.execute("""  
                             SELECT id, nome, editora, tipo_leitura 
                             FROM Books
-                            WHERE status = True
+                            WHERE status = True AND tipo_leitura = %s
                             ORDER BY nome ASC
-                        """)
+                        """, (tipo_leitura, ))
         lista = self.cursor.fetchall()
-
+        print(lista)
         new_lista = [[0, 0, 0, 0]]
         try:
             for i in lista:
@@ -494,10 +492,15 @@ class Books(Functions):
                                      bg= self.cor_de_fundo, fg= self.cor_letras)
         self.lb_tipo_leitura.place(rely= 0.4, relx= 0.03, relwidth= 0.315)
 
-        self.entry_tipo_leitura = Combobox(self.frame_home_cadastro, values= ['Literatura', 'Informatica', 'Investimento',
-                                                                              'Filosofia', 'Vida Espiritual', 'Historia', 'Economia',
-                                                                              'Psicologia', 'Política', 'Biografias', 'Liturgia',
-                                                                              'Teologia', 'Doutrina'])
+        self.entry_tipo_leitura = Combobox(self.frame_home_cadastro, values= [  'Filosofia', 'História - Catol',
+                                                                                'Filosofia - Catol', 'Teologia - Catol',
+                                                                                'Espiritualidade - Catol',
+                                                                                'Apologética - Catol',
+                                                                                'Formação Humana - Catol',
+                                                                                'Outras Religiões','Ciências Sócias',
+                                                                                'Línguas','Computação','Artes',
+                                                                                'Literatura','História','Geografia',
+                                                                                'Investimentos'])
         self.entry_tipo_leitura.place(rely= 0.47, relx= 0.028, relwidth= 0.4)
 
         # Botões
@@ -556,12 +559,20 @@ class Books(Functions):
         # self.entry_book_editory_dreams = Entry(self.frame_home_list_dreams)
         # self.entry_book_editory_dreams.place(rely= 0.45, relx= 0.34, relwidth= 0.18)
         #
-        # self.lb_tipo_leitura_dreams = Label(self.frame_home_list_dreams, text= "Tipo de Leitura", font= "-weight bold -size 13",
-        #                                     bg= self.cor_de_fundo, fg= self.cor_letras)
-        # self.lb_tipo_leitura_dreams.place(rely= 0.26, relx= 0.56, relwidth= 0.17)
+        self.lb_tipo_leitura_dreams = Label(self.frame_home_list_dreams, text= "Tipo de Leitura", font= "-weight bold -size 13",
+                                             bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_tipo_leitura_dreams.place(rely= 0.26, relx= 0.4, relwidth= 0.17)
         #
-        # self.entry_tipo_leitura_dreams = Entry(self.frame_home_list_dreams)
-        # self.entry_tipo_leitura_dreams.place(rely= 0.45, relx= 0.56, relwidth= 0.2)
+        self.entry_tipo_leitura_dreams = Combobox(self.frame_home_list_dreams, values= [  'Filosofia', 'História - Catol',
+                                                                                'Filosofia - Catol', 'Teologia - Catol',
+                                                                                'Espiritualidade - Catol',
+                                                                                'Apologética - Catol',
+                                                                                'Formação Humana - Catol',
+                                                                                'Outras Religiões','Ciências Sócias',
+                                                                                'Línguas','Computação','Artes',
+                                                                                'Literatura','História','Geografia',
+                                                                                'Investimentos'])
+        self.entry_tipo_leitura_dreams.place(rely= 0.45, relx= 0.405, relwidth= 0.2)
 
         # Botôes
 
@@ -574,18 +585,18 @@ class Books(Functions):
                                  font= "-weight bold -size 10", command= self.updateBook)
         self.bt_alterar.place(rely= 0.71, relx= 0.14, relwidth= 0.1)
 
-        self.bt_buscar_books = Button(self.frame_home_list_dreams, text= "Buscar P/Nome", background= self.cor_botoes, bd= 4,
-                                      font= "-weight bold -size 10", command= self.searchName)
-        self.bt_buscar_books.place(rely= 0.36, relx= 0.55, relwidth= 0.17)
+        self.bt_buscar_books = Button(self.frame_home_list_dreams, text= "Filtrar Tipo Leitura", background= self.cor_botoes, bd= 4,
+                                      font= "-weight bold -size 10", command= self.filtrarTipoDreams)
+        self.bt_buscar_books.place(rely= 0.71, relx= 0.405, relwidth= 0.19)
 
         self.bt_ordenar_books = Button(self.frame_home_list_dreams, text= "Ordenar P/Nome", background= self.cor_botoes,
-                                       bd= 4, font= "-weight bold -size 10", command= self.ordenarNameDreams)
-        self.bt_ordenar_books.place(rely= 0.71, relx= 0.55, relwidth= 0.17)
+                                       bd= 4, font= "-weight bold -size 10", command= self.filtrarTipoDreams)
+        self.bt_ordenar_books.place(rely= 0.11, relx= 0.75, relwidth= 0.23)
 
         self.bt_buscar_editora_dreams = Button(self.frame_home_list_dreams, text= "Ordenar P/Editora",
                                                background= self.cor_botoes, bd= 4, font= "-weight bold -size 10",
                                                command= self.searchEditoraDreams)
-        self.bt_buscar_editora_dreams.place(rely= 0.36, relx= 0.75, relwidth= 0.23)
+        self.bt_buscar_editora_dreams.place(rely= 0.41, relx= 0.75, relwidth= 0.23)
 
         self.bt_buscar_tipo_dreams = Button(self.frame_home_list_dreams, text= "Ordenar P/Tipo Leitura",
                                             background= self.cor_botoes, bd= 4, font= "-weight bold -size 10",
