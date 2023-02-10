@@ -9,6 +9,7 @@ class Functions():
     def limpar_tela(self):
         self.entry_id_book_dreams.delete(0, END)
         self.entry_name_book_dreams.delete(0, END)
+        self.entry_book_editory_dreams.delete(0, END)
         self.entry_tipo_leitura_dreams.delete(0, END)
 
     def conectar_bd(self):
@@ -167,6 +168,7 @@ class Functions():
             col1, col2, col3, col4 = self.list.item(n, 'values')
             self.entry_id_book_dreams.insert(END, col1)
             self.entry_name_book_dreams.insert(END, col2)
+            self.entry_book_editory_dreams.insert(END, col3)
             self.entry_tipo_leitura_dreams.insert(END, col4)
 
     # Excluir Livro Lista de Desejos
@@ -349,14 +351,21 @@ class Functions():
         self.list.delete(*self.list.get_children())
         tipo_leitura = self.entry_tipo_leitura_dreams.get()
 
-        self.cursor.execute("""  
-                            SELECT id, nome, editora, tipo_leitura 
-                            FROM Books
-                            WHERE status = True AND tipo_leitura = %s
-                            ORDER BY nome ASC
-                        """, (tipo_leitura, ))
+        if tipo_leitura == 'Todos':
+            self.cursor.execute("""
+                                SELECT id, nome, editora, tipo_leitura
+                                FROM Books
+                                WHERE status = True
+                                ORDER BY id ASC
+                            """)
+        else:
+            self.cursor.execute("""  
+                                SELECT id, nome, editora, tipo_leitura 
+                                FROM Books
+                                WHERE status = True AND tipo_leitura = %s
+                                ORDER BY nome ASC
+                            """, (tipo_leitura, ))
         lista = self.cursor.fetchall()
-        print(lista)
         new_lista = [[0, 0, 0, 0]]
         try:
             for i in lista:
@@ -390,15 +399,20 @@ class Functions():
     def contarBooks(self, tipo_leitura):
         self.conectar_bd()
         leitura = tipo_leitura
-        self.cursor.execute(""" SELECT id, nome, editora, tipo_leitura
-                                FROM Comprados
-                                WHERE tipo_leitura = %s
-                                ORDER BY id ASC
-                                """, (leitura, ))
-        lista = self.cursor.fetchall()
-        print(lista)
-        print(len(lista))
 
+        if leitura == 'Todos':
+            self.cursor.execute(""" SELECT id, nome, editora, tipo_leitura
+                                                FROM Comprados
+                                                ORDER BY id ASC
+                                                """)
+        else:
+            self.cursor.execute(""" SELECT id, nome, editora, tipo_leitura
+                                    FROM Comprados
+                                    WHERE tipo_leitura = %s
+                                    ORDER BY id ASC
+                                    """, (leitura, ))
+
+        lista = self.cursor.fetchall()
         self.desconecta_bd()
 
         return  len(lista)
@@ -492,15 +506,16 @@ class Books(Functions):
                                      bg= self.cor_de_fundo, fg= self.cor_letras)
         self.lb_tipo_leitura.place(rely= 0.4, relx= 0.03, relwidth= 0.315)
 
-        self.entry_tipo_leitura = Combobox(self.frame_home_cadastro, values= [  'Filosofia', 'História - Catol',
-                                                                                'Filosofia - Catol', 'Teologia - Catol',
-                                                                                'Espiritualidade - Catol',
-                                                                                'Apologética - Catol',
-                                                                                'Formação Humana - Catol',
-                                                                                'Outras Religiões','Ciências Sócias',
-                                                                                'Línguas','Computação','Artes',
-                                                                                'Literatura','História','Geografia',
-                                                                                'Investimentos'])
+        self.entry_tipo_leitura = Combobox(self.frame_home_cadastro,
+                                           values= [ 'Filosofia Geral', 'História - Catol',
+                                                        'Filosofia - Catol', 'Teologia - Catol',
+                                                        'Espiritualidade - Catol',
+                                                        'Apologética - Catol',
+                                                        'Formação Humana - Catol',
+                                                        'Outras Religiões','Ciências Sócias',
+                                                        'Línguas','Computação','Artes',
+                                                        'Literatura','História','Geografia',
+                                                        'Investimentos'])
         self.entry_tipo_leitura.place(rely= 0.47, relx= 0.028, relwidth= 0.4)
 
         # Botões
@@ -552,18 +567,19 @@ class Books(Functions):
         self.entry_name_book_dreams = Entry(self.frame_home_list_dreams)
         self.entry_name_book_dreams.place(rely= 0.45, relx= 0.1, relwidth= 0.2)
         #
-        # self.lb_book_editory_dreams = Label(self.frame_home_list_dreams, text= "Editora", font= "-weight bold -size 13",
-        #                                     bg= self.cor_de_fundo, fg= self.cor_letras)
-        # self.lb_book_editory_dreams.place(rely= 0.26, relx= 0.34, relwidth= 0.082)
+        self.lb_book_editory_dreams = Label(self.frame_home_list_dreams, text= "Editora", font= "-weight bold -size 13",
+                                            bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_book_editory_dreams.place(rely= 0.26, relx= 0.34, relwidth= 0.082)
         #
-        # self.entry_book_editory_dreams = Entry(self.frame_home_list_dreams)
-        # self.entry_book_editory_dreams.place(rely= 0.45, relx= 0.34, relwidth= 0.18)
+        self.entry_book_editory_dreams = Entry(self.frame_home_list_dreams)
+        self.entry_book_editory_dreams.place(rely= 0.45, relx= 0.34, relwidth= 0.12)
         #
         self.lb_tipo_leitura_dreams = Label(self.frame_home_list_dreams, text= "Tipo de Leitura", font= "-weight bold -size 13",
                                              bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_tipo_leitura_dreams.place(rely= 0.26, relx= 0.4, relwidth= 0.17)
+        self.lb_tipo_leitura_dreams.place(rely= 0.26, relx= 0.495, relwidth= 0.17)
         #
-        self.entry_tipo_leitura_dreams = Combobox(self.frame_home_list_dreams, values= [  'Filosofia', 'História - Catol',
+        self.entry_tipo_leitura_dreams = Combobox(self.frame_home_list_dreams, values= [ 'Todos', 'Filosofia Geral',
+                                                                                         'História - Catol',
                                                                                 'Filosofia - Catol', 'Teologia - Catol',
                                                                                 'Espiritualidade - Catol',
                                                                                 'Apologética - Catol',
@@ -572,7 +588,7 @@ class Books(Functions):
                                                                                 'Línguas','Computação','Artes',
                                                                                 'Literatura','História','Geografia',
                                                                                 'Investimentos'])
-        self.entry_tipo_leitura_dreams.place(rely= 0.45, relx= 0.405, relwidth= 0.2)
+        self.entry_tipo_leitura_dreams.place(rely= 0.45, relx= 0.5, relwidth= 0.2)
 
         # Botôes
 
@@ -583,11 +599,11 @@ class Books(Functions):
 
         self.bt_alterar = Button(self.frame_home_list_dreams, text= "Alterar", background= self.cor_botoes, bd= 4,
                                  font= "-weight bold -size 10", command= self.updateBook)
-        self.bt_alterar.place(rely= 0.71, relx= 0.14, relwidth= 0.1)
+        self.bt_alterar.place(rely= 0.71, relx= 0.125, relwidth= 0.1)
 
         self.bt_buscar_books = Button(self.frame_home_list_dreams, text= "Filtrar Tipo Leitura", background= self.cor_botoes, bd= 4,
                                       font= "-weight bold -size 10", command= self.filtrarTipoDreams)
-        self.bt_buscar_books.place(rely= 0.71, relx= 0.405, relwidth= 0.19)
+        self.bt_buscar_books.place(rely= 0.71, relx= 0.5, relwidth= 0.19)
 
         self.bt_ordenar_books = Button(self.frame_home_list_dreams, text= "Ordenar P/Nome", background= self.cor_botoes,
                                        bd= 4, font= "-weight bold -size 10", command= self.filtrarTipoDreams)
@@ -605,7 +621,7 @@ class Books(Functions):
 
         self.bt_excluir_books = Button(self.frame_home_list_dreams, text= "Excluir", background= self.cor_botoes, bd= 4,
                                        font= "-weight bold -size 10", command= self.deleteBook)
-        self.bt_excluir_books.place(rely= 0.71, relx= 0.27, relwidth= 0.1)
+        self.bt_excluir_books.place(rely= 0.71, relx= 0.24, relwidth= 0.1)
 
         # Lista
         self.list_frame()
@@ -615,7 +631,7 @@ class Books(Functions):
         self.window_information = Toplevel(self.window_book_comprados)
 
         self.window_information.title("Livros Comprados - Relatorio")
-        self.window_information.geometry("300x300")
+        self.window_information.geometry("400x400")
         self.window_information.configure(background= self.cor_de_fundo)
         self.window_information.resizable(False, False)
 
@@ -634,110 +650,148 @@ class Books(Functions):
         self.lb_relatorys.place(rely= 0.01, relx= 0.31, relwidth= 0.375)
 
 
-        self.lb_vida_espiritual = Label(self.frame_home_books_information, text= "Vida Espiritual: ",
+        self.lb_filosofia_geral = Label(self.frame_home_books_information, text= "Filosofia Geral: ",
                                         font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_vida_espiritual.place(rely= 0.13, relx= 0.01, relwidth= 0.36)
+        self.lb_filosofia_geral.place(rely= 0.1, relx= 0.01, relwidth= 0.27)
 
-        self.lb_vida = Label(self.frame_home_books_information, text= self.contarBooks("Vida Espiritual"),
+        self.lb_filo = Label(self.frame_home_books_information, text= self.contarBooks("Filosofia Geral"),
                              font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_vida.place(rely= 0.13, relx= 0.37, relwidth= 0.11)
+        self.lb_filo.place(rely= 0.1, relx= 0.28, relwidth= 0.08)
+
+
+        self.lb_hist_cat = Label(self.frame_home_books_information, text= "História - Catol: ",
+                                   font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_hist_cat.place(rely= 0.1, relx= 0.55, relwidth= 0.27)
+
+        self.lb_hist_ct = Label(self.frame_home_books_information, text= self.contarBooks("História - Catol"),
+                            font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_hist_ct.place(rely= 0.1, relx= 0.81, relwidth= 0.08)
+
+
+        self.lb_filo_cat = Label(self.frame_home_books_information, text= "Filosofia - Catol: ",
+                                    font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_filo_cat.place(rely= 0.21, relx= 0.01, relwidth= 0.283)
+
+        self.lb_filo_cat = Label(self.frame_home_books_information, text= self.contarBooks("Filosofia - Catol"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_filo_cat.place(rely= 0.21, relx= 0.29, relwidth= 0.08)
+
+
+        self.lb_teo_cat = Label(self.frame_home_books_information, text= "Teologia - Catol: ",
+                                     font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_teo_cat.place(rely= 0.21, relx= 0.55, relwidth= 0.29)
+
+        self.lb_teo_ct = Label(self.frame_home_books_information, text= self.contarBooks("Teologia - Catol"),
+                               font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_teo_ct.place(rely= 0.21, relx= 0.835, relwidth= 0.08)
+
+
+        self.lb_espirit_cat = Label(self.frame_home_books_information, text= "Espiritualidade - Catol: ",
+                                  font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_espirit_cat.place(rely= 0.32, relx= 0.01, relwidth= 0.395)
+
+        self.lb_espirit_ct = Label(self.frame_home_books_information, text= self.contarBooks("Espiritualidade - Catol"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_espirit_ct.place(rely= 0.32, relx= 0.395, relwidth= 0.08)
+
+
+        self.lb_apolog_cat = Label(self.frame_home_books_information, text= "Apologética - Catol: ",
+                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_apolog_cat.place(rely= 0.32, relx= 0.55, relwidth= 0.345)
+
+        self.lb_apolog_ct = Label(self.frame_home_books_information, text= self.contarBooks("Apologética - Catol"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_apolog_ct.place(rely= 0.32, relx= 0.885, relwidth= 0.08)
+
+
+        self.lb_formac_cat = Label(self.frame_home_books_information, text= "Formação Humana - Catol: ",
+                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_formac_cat.place(rely= 0.43, relx= 0.01, relwidth= 0.462)
+
+        self.lb_formac_ct = Label(self.frame_home_books_information, text= self.contarBooks("Formação Humana - Catol"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_formac_ct.place(rely= 0.43, relx= 0.465, relwidth= 0.08)
+
+
+        self.lb_ling = Label(self.frame_home_books_information, text="Línguas: ",
+                             font="-weight bold -size 10", bg= self.cor_de_fundo, fg=self.cor_letras)
+        self.lb_ling.place(rely=0.43, relx=0.55, relwidth=0.152)
+
+        self.lb_lg = Label(self.frame_home_books_information, text=self.contarBooks("Línguas"),
+                           font="-weight bold -size 10", bg= self.cor_de_fundo, fg=self.cor_letras)
+        self.lb_lg.place(rely=0.43, relx=0.695, relwidth=0.08)
+
+
+        self.lb_outr_relig = Label(self.frame_home_books_information, text= "Outras Religiões: ",
+                                   font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_outr_relig.place(rely= 0.54, relx= 0.55, relwidth= 0.3)
+
+        self.lb_outr_rg = Label(self.frame_home_books_information, text= self.contarBooks("Outras Religiões"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_outr_rg.place(rely= 0.54, relx= 0.84, relwidth= 0.08)
+
+
+        self.lb_cien_soc = Label(self.frame_home_books_information, text= "Ciências Sócias: ",
+                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_cien_soc.place(rely= 0.54, relx= 0.01, relwidth= 0.29)
+
+        self.lb_cien_sc = Label(self.frame_home_books_information, text= self.contarBooks("Ciências Sócias"),
+                              font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_cien_sc.place(rely= 0.54, relx= 0.29, relwidth= 0.08)
+
+
+        self.lb_compt = Label(self.frame_home_books_information, text= "Computação: ",
+                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_compt.place(rely= 0.65, relx= 0.01, relwidth= 0.232)
+
+        self.lb_cpt = Label(self.frame_home_books_information, text= self.contarBooks("Computação"),
+                            font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_cpt.place(rely= 0.65, relx= 0.234, relwidth= 0.08)
+
+
+        self.lb_artes = Label(self.frame_home_books_information, text= "Artes: ",
+                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_artes.place(rely= 0.65, relx= 0.55, relwidth= 0.11)
+
+        self.lb_art = Label(self.frame_home_books_information, text= self.contarBooks("Artes"),
+                            font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_art.place(rely= 0.65, relx= 0.65, relwidth= 0.08)
 
 
         self.lb_literatura = Label(self.frame_home_books_information, text= "Literatura: ",
-                                   font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_literatura.place(rely= 0.13, relx= 0.55, relwidth= 0.25)
+                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_literatura.place(rely= 0.76, relx= 0.55, relwidth= 0.184)
 
         self.lb_lit = Label(self.frame_home_books_information, text= self.contarBooks("Literatura"),
-                            font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_lit.place(rely= 0.13, relx= 0.83, relwidth= 0.11)
-
-        self.lb_informatica = Label(self.frame_home_books_information, text= "Informática: ",
-                                    font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_informatica.place(rely= 0.24, relx= 0.01, relwidth= 0.29)
-
-        self.lb_info = Label(self.frame_home_books_information, text= self.contarBooks("Informática"),
                              font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_info.place(rely= 0.24, relx= 0.33, relwidth= 0.11)
+        self.lb_lit.place(rely= 0.76, relx= 0.73, relwidth= 0.08)
 
-        self.lb_investimento = Label(self.frame_home_books_information, text= "Investimentos: ",
-                                     font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_investimento.place(rely= 0.24, relx= 0.55, relwidth= 0.34)
 
-        self.lb_invest = Label(self.frame_home_books_information, text= self.contarBooks("Investimentos"),
+        self.lb_historia = Label(self.frame_home_books_information, text= "História Geral: ",
+                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_historia.place(rely= 0.76, relx= 0.01, relwidth= 0.252)
+
+        self.lb_hist = Label(self.frame_home_books_information, text= self.contarBooks("História Geral"),
+                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_hist.place(rely= 0.76, relx= 0.254, relwidth= 0.08)
+
+
+        self.lb_invest = Label(self.frame_home_books_information, text= "Investimentos: ",
                                font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_invest.place(rely= 0.24, relx= 0.88, relwidth= 0.11)
+        self.lb_invest.place(rely= 0.87, relx= 0.01, relwidth= 0.252)
 
-        self.lb_filosofia = Label(self.frame_home_books_information, text= "Filosofia: ",
-                                  font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_filosofia.place(rely= 0.35, relx= 0.01, relwidth= 0.22)
-
-        self.lb_filo = Label(self.frame_home_books_information, text= self.contarBooks("Filosofia"),
-                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_filo.place(rely= 0.35, relx= 0.33, relwidth= 0.11)
-
-        self.lb_historia = Label(self.frame_home_books_information, text= "História: ",
-                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_historia.place(rely= 0.35, relx= 0.55, relwidth= 0.2)
-
-        self.lb_hist = Label(self.frame_home_books_information, text= self.contarBooks("História"),
-                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_hist.place(rely= 0.35, relx= 0.83, relwidth= 0.11)
-
-        self.lb_economia = Label(self.frame_home_books_information, text= "Economia: ",
-                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_economia.place(rely= 0.46, relx= 0.01, relwidth= 0.255)
-
-        self.lb_econ = Label(self.frame_home_books_information, text= self.contarBooks("Economia"),
-                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_econ.place(rely= 0.46, relx= 0.33, relwidth= 0.11)
-
-        self.lb_psicologia = Label(self.frame_home_books_information, text= "Psicologia: ",
-                                   font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_psicologia.place(rely= 0.46, relx= 0.55, relwidth= 0.265)
-
-        self.lb_psic = Label(self.frame_home_books_information, text= self.contarBooks("Psicologia"),
-                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_psic.place(rely= 0.46, relx= 0.83, relwidth= 0.11)
-
-        self.lb_politica = Label(self.frame_home_books_information, text= "Política: ",
-                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_politica.place(rely= 0.57, relx= 0.01, relwidth= 0.2)
-
-        self.lb_polit = Label(self.frame_home_books_information, text= self.contarBooks("Política"),
-                              font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_polit.place(rely= 0.57, relx= 0.33, relwidth= 0.11)
-
-        self.lb_biografia = Label(self.frame_home_books_information, text= "Biografia: ",
-                                  font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_biografia.place(rely= 0.57, relx= 0.55, relwidth= 0.233)
-
-        self.lb_biog = Label(self.frame_home_books_information, text= self.contarBooks("Biografia"),
-                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_biog.place(rely= 0.57, relx= 0.83, relwidth= 0.11)
-
-        self.lb_liturgia = Label(self.frame_home_books_information, text= "Liturgia: ",
-                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_liturgia.place(rely= 0.68, relx= 0.01, relwidth= 0.205)
-
-        self.lb_lit = Label(self.frame_home_books_information, text= self.contarBooks("Liturgia"),
+        self.lb_inv = Label(self.frame_home_books_information, text= self.contarBooks("Investimentos"),
                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_lit.place(rely= 0.68, relx= 0.33, relwidth= 0.11)
+        self.lb_inv.place(rely= 0.87, relx= 0.253, relwidth= 0.08)
 
-        self.lb_teologia = Label(self.frame_home_books_information, text= "Teologia: ",
-                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_teologia.place(rely= 0.68, relx= 0.55, relwidth= 0.23)
 
-        self.lb_teo = Label(self.frame_home_books_information, text= self.contarBooks("Teologia"),
-                            font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_teo.place(rely= 0.68, relx= 0.83, relwidth= 0.11)
+        self.lb_total_books = Label(self.frame_home_books_information, text= "Toda Biblioteca: ",
+                                 font= "-weight bold -size 12", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_total_books.place(rely= 0.87, relx=0.5, relwidth= 0.34)
 
-        self.lb_doutrina = Label(self.frame_home_books_information, text= "Doutrina: ",
-                                 font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_doutrina.place(rely= 0.79, relx= 0.55, relwidth= 0.223)
-
-        self.lb_dout = Label(self.frame_home_books_information, text= self.contarBooks("Doutrina"),
-                             font= "-weight bold -size 10", bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_dout.place(rely= 0.79, relx= 0.83, relwidth= 0.11)
+        self.lb_tot_bk = Label(self.frame_home_books_information, text= self.contarBooks('Todos'),
+                               font= "-weight bold -size 12", bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_tot_bk.place(rely= 0.87, relx= 0.831, relwidth= 0.12)
 
     def homeBooksComprados(self):
         self.window_book_comprados = Toplevel(self.books)
