@@ -470,7 +470,7 @@ class Books(Functions):
         self.windows_cadastro = Toplevel(self.books)
 
         self.windows_cadastro.title("Cadastro dos Livros")
-        self.windows_cadastro.geometry("400x400")
+        self.windows_cadastro.geometry("400x280")
         self.windows_cadastro.configure(background= self.cor_de_fundo)
         self.windows_cadastro.resizable(False, False)
         self.center(self.windows_cadastro)
@@ -490,21 +490,22 @@ class Books(Functions):
 
         self.lb_name_book = Label(self.frame_home_cadastro, text= "Nome", font= "-weight bold -size 13",
                                   bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_name_book.place(rely= 0.1, relx= 0.03, relwidth= 0.118)
+        self.lb_name_book.place(rely= 0.15, relx= 0.03, relwidth= 0.118)
 
         self.entry_name_book = Entry(self.frame_home_cadastro)
-        self.entry_name_book.place(rely= 0.17, relx= 0.028, relwidth= 0.4)
+        self.entry_name_book.place(rely= 0.25, relx= 0.028, relwidth= 0.4)
+
 
         self.lb_book_editory = Label(self.frame_home_cadastro, text= "Editora", font= "-weight bold -size 13",
-                                     bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_book_editory.place(rely= 0.25, relx= 0.03, relwidth= 0.155)
-
+                                    bg= self.cor_de_fundo, fg= self.cor_letras)
+        self.lb_book_editory.place(rely= 0.37, relx= 0.03, relwidth= 0.155)
+        #
         self.entry_book_editory = Entry(self.frame_home_cadastro)
-        self.entry_book_editory.place(rely= 0.32, relx= 0.028, relwidth= 0.4)
-
+        self.entry_book_editory.place(rely= 0.47, relx= 0.028, relwidth= 0.4)
+        #
         self.lb_tipo_leitura = Label(self.frame_home_cadastro, text= "Tipo de Leitura", font= "-weight bold -size 13",
                                      bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_tipo_leitura.place(rely= 0.4, relx= 0.03, relwidth= 0.315)
+        self.lb_tipo_leitura.place(rely= 0.6, relx= 0.03, relwidth= 0.315)
 
         self.entry_tipo_leitura = Combobox(self.frame_home_cadastro,
                                            values= [ 'Filosofia Geral', 'História - Catol',
@@ -512,17 +513,17 @@ class Books(Functions):
                                                         'Espiritualidade - Catol',
                                                         'Apologética - Catol',
                                                         'Formação Humana - Catol',
-                                                        'Outras Religiões','Ciências Sócias',
+                                                       'Outras Religiões','Ciências Sócias',
                                                         'Línguas','Computação','Artes',
                                                         'Literatura','História','Geografia',
                                                         'Investimentos'])
-        self.entry_tipo_leitura.place(rely= 0.47, relx= 0.028, relwidth= 0.4)
+        self.entry_tipo_leitura.place(rely= 0.7, relx= 0.028, relwidth= 0.4)
 
         # Botões
         self.bt_cadastrar = Button(self.frame_home_cadastro, text= "Adicionar",
                                    background= self.cor_botoes, bd= 4, font= "-weight bold -size 10",
                                    command= self.inserirBook)
-        self.bt_cadastrar.place(rely= 0.6, relx= 0.03, relwidth= 0.19)
+        self.bt_cadastrar.place(rely= 0.83, relx= 0.028, relwidth= 0.19)
         # self.windows_cadastro.mainloop()
     def homeListaDesejos(self):
         self.window_list_dreams = Toplevel(self.books)
