@@ -205,31 +205,26 @@ class Functions():
 
     # Procurar p/nome Lista de Desejos
     def searchName(self):
-        self.nome = self.entry_name_book_dreams.get()
-
+        self.select_bd()
         self.conectar_bd()
         self.list.delete(*self.list.get_children())
 
-        self.cursor.execute("""
-                        SELECT id, nome, editora, tipo_leitura 
-                        FROM Books
-                        WHERE nome = %s AND status = True
-                        ORDER BY id ASC
-                        """, (self.nome, ))
+        self.cursor.execute("""   
+                                    SELECT id, nome, editora, tipo_leitura 
+                                    FROM Books
+                                    WHERE status = True
+                                    ORDER BY nome ASC
+                                    """)
         lista = self.cursor.fetchall()
 
-        if len(lista) == 0:
-            tkinter.messagebox.showinfo("Lista de Desejos", "Nenhum livro encontrado")
-        else:
-            new_lista = [[0, 0, 0, 0]]
-            try:
-                for i in lista:
-                    self.list.insert("", END, values=i)
-            except:
-                for k in new_lista:
-                    self.list.insert("", END, values=k)
-            self.limpar_tela()
-            self.desconecta_bd()
+        new_lista = [[0, 0, 0, 0]]
+        try:
+            for i in lista:
+                self.list.insert("", END, values=i)
+        except:
+            for k in new_lista:
+                self.list.insert("", END, values=k)
+        self.desconecta_bd()
 
     def searchNameComprados(self): # buscar Comprados
         self.selectBdComprados()
@@ -470,7 +465,7 @@ class Books(Functions):
         self.windows_cadastro = Toplevel(self.books)
 
         self.windows_cadastro.title("Cadastro dos Livros")
-        self.windows_cadastro.geometry("400x280")
+        self.windows_cadastro.geometry("400x200")
         self.windows_cadastro.configure(background= self.cor_de_fundo)
         self.windows_cadastro.resizable(False, False)
         self.center(self.windows_cadastro)
@@ -490,22 +485,22 @@ class Books(Functions):
 
         self.lb_name_book = Label(self.frame_home_cadastro, text= "Nome", font= "-weight bold -size 13",
                                   bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_name_book.place(rely= 0.15, relx= 0.03, relwidth= 0.118)
+        self.lb_name_book.place(rely= 0.17, relx= 0.03, relwidth= 0.118)
 
         self.entry_name_book = Entry(self.frame_home_cadastro)
-        self.entry_name_book.place(rely= 0.25, relx= 0.028, relwidth= 0.4)
+        self.entry_name_book.place(rely= 0.31, relx= 0.028, relwidth= 0.4)
 
 
         self.lb_book_editory = Label(self.frame_home_cadastro, text= "Editora", font= "-weight bold -size 13",
                                     bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_book_editory.place(rely= 0.37, relx= 0.03, relwidth= 0.155)
+        self.lb_book_editory.place(rely= 0.17, relx= 0.56, relwidth= 0.155)
         #
         self.entry_book_editory = Entry(self.frame_home_cadastro)
-        self.entry_book_editory.place(rely= 0.47, relx= 0.028, relwidth= 0.4)
+        self.entry_book_editory.place(rely= 0.31, relx= 0.56, relwidth= 0.4)
         #
         self.lb_tipo_leitura = Label(self.frame_home_cadastro, text= "Tipo de Leitura", font= "-weight bold -size 13",
                                      bg= self.cor_de_fundo, fg= self.cor_letras)
-        self.lb_tipo_leitura.place(rely= 0.6, relx= 0.03, relwidth= 0.315)
+        self.lb_tipo_leitura.place(rely= 0.51, relx= 0.03, relwidth= 0.315)
 
         self.entry_tipo_leitura = Combobox(self.frame_home_cadastro,
                                            values= [ 'Filosofia Geral', 'História - Catol',
@@ -517,13 +512,13 @@ class Books(Functions):
                                                         'Línguas','Computação','Artes',
                                                         'Literatura','História','Geografia',
                                                         'Investimentos'])
-        self.entry_tipo_leitura.place(rely= 0.7, relx= 0.028, relwidth= 0.4)
+        self.entry_tipo_leitura.place(rely= 0.65, relx= 0.028, relwidth= 0.4)
 
         # Botões
         self.bt_cadastrar = Button(self.frame_home_cadastro, text= "Adicionar",
                                    background= self.cor_botoes, bd= 4, font= "-weight bold -size 10",
                                    command= self.inserirBook)
-        self.bt_cadastrar.place(rely= 0.83, relx= 0.028, relwidth= 0.19)
+        self.bt_cadastrar.place(rely= 0.52, relx= 0.56, relwidth= 0.19)
         # self.windows_cadastro.mainloop()
     def homeListaDesejos(self):
         self.window_list_dreams = Toplevel(self.books)
@@ -607,7 +602,7 @@ class Books(Functions):
         self.bt_buscar_books.place(rely= 0.71, relx= 0.5, relwidth= 0.19)
 
         self.bt_ordenar_books = Button(self.frame_home_list_dreams, text= "Ordenar P/Nome", background= self.cor_botoes,
-                                       bd= 4, font= "-weight bold -size 10", command= self.filtrarTipoDreams)
+                                       bd= 4, font= "-weight bold -size 10", command= self.searchName)
         self.bt_ordenar_books.place(rely= 0.11, relx= 0.75, relwidth= 0.23)
 
         self.bt_buscar_editora_dreams = Button(self.frame_home_list_dreams, text= "Ordenar P/Editora",
@@ -824,25 +819,25 @@ class Books(Functions):
         self.lb_title_books_comprados.place(rely=0.01, relx=0.35, relwidth=0.3)
 
         # Botôes
-        self.bt_buscar_nome = Button(self.frame_home_books_comprados, text="Buscar Nome",
+        self.bt_buscar_nome = Button(self.frame_home_books_comprados, text="Ordenar P/Nome",
                                  background=self.cor_botoes, bd=4,
                                  font="-weight bold -size 10", command= self.searchNameComprados)
-        self.bt_buscar_nome.place(rely=0.49, relx=0.01, relwidth=0.15)
+        self.bt_buscar_nome.place(rely=0.49, relx=0.01, relwidth=0.165)
 
-        self.bt_buscar_editora = Button(self.frame_home_books_comprados, text= "Buscar Editora",
+        self.bt_buscar_editora = Button(self.frame_home_books_comprados, text= "Ordenar P/Editora",
                                         background= self.cor_botoes, bd= 4,
                                         font= "-weight bold -size 10", command= self.searchEditoraComprados)
-        self.bt_buscar_editora.place(rely= 0.49, relx= 0.18, relwidth= 0.15)
+        self.bt_buscar_editora.place(rely= 0.49, relx= 0.19, relwidth= 0.18)
 
-        self.bt_buscar_tipo = Button(self.frame_home_books_comprados, text= "Buscar Tipo Leitura",
+        self.bt_buscar_tipo = Button(self.frame_home_books_comprados, text= "Ordenar P/Tipo Leitura",
                                      background= self.cor_botoes, bd= 4,
                                      font= "-weight bold -size 10", command= self.searchTipoLeitura)
-        self.bt_buscar_tipo.place(rely= 0.49, relx= 0.35, relwidth= 0.19)
+        self.bt_buscar_tipo.place(rely= 0.49, relx= 0.387, relwidth= 0.23)
 
-        self.bt_buscar_id = Button(self.frame_home_books_comprados, text= "Buscar Id",
+        self.bt_buscar_id = Button(self.frame_home_books_comprados, text= "Ordenar P/Id",
                                    background= self.cor_botoes, bd= 4,
                                    font= "-weight bold -size 10", command= self.searchIdComprados)
-        self.bt_buscar_id.place(rely= 0.49, relx= 0.56, relwidth= 0.13)
+        self.bt_buscar_id.place(rely= 0.49, relx= 0.635, relwidth= 0.135)
 
         self.bt_informacoes = Button(self.frame_home_books_comprados, text= "Relatorio", background= self.cor_botoes,
                                      bd= 4, font= "-weight bold -size 10", command= self.homeBooksCompradosInformation)
