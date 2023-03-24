@@ -117,22 +117,30 @@ class Functions():
                             """)
         lista = self.cursor.fetchall()
         id = 0
+        cont = 0
 
         if len(lista) != 0:
             for i in lista:
                 id = i[0]
+                if self.nome == i[1]:
+                    cont = cont + 1
 
-        if len(self.nome) and len(self.editora) and len(self.tipo_leitura) != 0:
-            self.cursor.execute("""
-                                       INSERT INTO Books (id, nome, editora, tipo_leitura, status)
-                                        VALUES (%s, %s, %s, %s, %s)""",
-                                (id + 1, self.nome, self.editora, self.tipo_leitura, self.status))
-            self.conn.commit()
-            self.desconecta_bd()
-            tkinter.messagebox.showinfo("Cadastro dos Livros", "Livro adicionado com sucesso!")
-            self.windows_cadastro.destroy()
+        if cont == 0:
+            if len(self.nome) and len(self.editora) and len(self.tipo_leitura) != 0:
+                self.cursor.execute("""
+                                           INSERT INTO Books (id, nome, editora, tipo_leitura, status)
+                                            VALUES (%s, %s, %s, %s, %s)""",
+                                    (id + 1, self.nome, self.editora, self.tipo_leitura, self.status))
+                self.conn.commit()
+                self.desconecta_bd()
+                tkinter.messagebox.showinfo("Cadastro dos Livros", "Livro adicionado com sucesso!")
+                self.windows_cadastro.destroy()
+            else:
+                tkinter.messagebox.showinfo("Cadastro dos Livros", "Erro! Livro não adicionado")
+                self.desconecta_bd()
+                self.windows_cadastro.destroy()
         else:
-            tkinter.messagebox.showinfo("Cadastro dos Livros", "Erro! Livro não adicionado")
+            tkinter.messagebox.showinfo("Cadastro dos Livros", "Livro já está cadastrado.")
             self.desconecta_bd()
             self.windows_cadastro.destroy()
 
